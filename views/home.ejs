@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Home Page</title>
+    <style>
+        body {
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 80%;
+            margin-top: 20px;
+        }
+
+        th, td {
+            border: 1px solid #aaa;
+            padding: 8px 12px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f4f4f4;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>URL Shortener</h1>
+
+    <% if (locals.id) { %>
+        <p>URL Generated: 
+            <a href="http://localhost:5000/url/<%= id %>" target="_blank">
+                http://localhost:5000/url/<%= id %>
+            </a>
+        </p>
+    <% } %>
+
+    <!-- URL Form -->
+    <div>
+        <form method="POST" action="/url">
+            <label for="url">Enter Your Original URL</label><br />
+            <input type="text" name="url" placeholder="https://example.com" id="url" required/>
+            <button type="submit">Generate</button>
+        </form>
+    </div>
+
+    <!-- Show all URLs -->
+    <% if (url && url.length > 0) { %>
+        <h2>All Shortened URLs</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Original URL</th>
+                    <th>Shortened URL</th>
+                </tr>
+            </thead>
+            <tbody>
+  <% url.forEach(u => { %>
+    <tr>
+      <td>
+        <a href="<%= u.originalUrl %>" target="_blank">
+          <%= u.originalUrl %> 
+        </a>
+      </td>
+      <td>
+        <a href="http://localhost:5000/url/<%= u.shortId %>" target="_blank">
+          http://localhost:5000/url/<%= u.shortId %>
+        </a>
+      </td>
+    </tr>
+  <% }) %>
+</tbody>
+
+        </table>
+    <% } else { %>
+        <p>No URLs found yet.</p>
+    <% } %>
+
+</body>
+</html>
