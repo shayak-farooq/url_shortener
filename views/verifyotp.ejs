@@ -1,1 +1,26 @@
-verify otp
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>login</title>
+    <style>
+        div{
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>verify otp</h1>
+    <form action="/user/verifyotp" method="POST" >
+        <div>
+            <label for="otp">Enter OTP</label>
+            <input type="text" name="otp" placeholder="otp">
+        </div>
+        <div>            
+            <button type="submit">Enter otp</button>
+        </div>
+    </form>
+    
+</body>
+</html>

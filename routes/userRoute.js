@@ -18,5 +18,7 @@ router = express.Router()
 router.post('/',upload.single('profile'),userController.signUp)
 router.post('/login',userController.handleUserLogin)
 router.post('/forgetpassword',userController.handleforgetpassword)
+router.post('/verifyotp',userController.handleVerifyotp)
+router.post('/resetpassword',userController.handleResetPassword)
 
 module.exports = router

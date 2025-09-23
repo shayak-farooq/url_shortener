@@ -27,6 +27,10 @@
             <a href="/signup"> <button type="button">signup</button></a>
         </div>
     </form>
-    
+       <% if (locals.message) { %>
+        <div class="error">
+            <%= message %> <!-- Display the error message -->
+        </div>
+    <% } %>
 </body>
 </html>
