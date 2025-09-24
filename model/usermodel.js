@@ -27,7 +27,9 @@ const userSchema = new mongoose.Schema({
     profile:{
         type:String,
         default:"default.png"
-    }
+    },
+    passwordResetToken:{type:String},
+    passwordResetExpires:{type:Date}
 },{timestamps:true})
 
 module.exports = mongoose.model('user',userSchema)

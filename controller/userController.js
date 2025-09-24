@@ -2,6 +2,9 @@ const User = require('../model/usermodel')
 const { setUser } = require('../service/auth')
 const bcrypt = require('bcryptjs')
 const nodemailer = require("nodemailer");
+const dotenv = require('dotenv').config();
+const jwt = require('jsonwebtoken')
+
 let store = {
     OTP :null,
     email:null
@@ -65,9 +68,11 @@ exports.handleforgetpassword = async (req, res) => {
             return res.render('forgetpassword', { error: " Invalid Email" })
         }
         let OTP= generateOTP();
-        store ={OTP,email}
-
-        console.log(store)
+        console.log(OTP)
+        let expire = Date.now() + 10 * 60 * 1000
+        user.passwordResetToken = OTP
+        user.passwordResetExpires = expire
+        await user.save()
         const transporter = nodemailer.createTransport({
             host: "smtp.gmail.com",
             port: 465,
@@ -83,13 +88,13 @@ exports.handleforgetpassword = async (req, res) => {
                 from: process.env.EMAIL_USER,
                 to: email,
                 subject: "OTP for password reset",
-                text: `your otp is ${OTP}`, // plain‑text body
+                text: `your OTP is ${OTP}.\n Do not `, // plain‑text body
             });
 
             console.log("Message sent:", info.messageId);
         })();
         // return res.render('forgetpassword',{otpsent:true})
-        return res.render('verifyotp')  
+        return res.render('verifyotp',{email:user.email})  
     }
     catch (error) {
         console.log("error login", error)
@@ -99,27 +104,32 @@ exports.handleforgetpassword = async (req, res) => {
 
 exports.handleVerifyotp = async (req, res) => {
     try {
-        const {otp} = req.body
-        if(!otp){
+        const {otp,email} = req.body
+        if(!otp || !email){
             return res.render('verifyotp',{
                 error:"OTP required"
             })
         }
-        if(otp !== store.OTP){
+        const user = await User.findOne({email,passwordResetToken:otp,passwordResetExpires:{$gt:Date.now()}})
+        if(!user){
             return res.render('verifyotp',{
-                error:"Invalid OTP"
+                error:"Invalid OTP or OTP Expired"
             })
         }
-
-        return res.render('resetpassword')
+        const authToken = jwt.sign(
+            {id : user._id},
+            process.env.JWT_SECRET,
+            { expiresIn: '10m'}
+        )
+        return res.render('resetpassword',{authToken:authToken})
     } catch (error) {
         console.log(error)
     }
 }
 exports.handleResetPassword = async (req, res) => {
     try {
-        const { newPassword,confirmPassword} = req.body
-        if(!newPassword || !confirmPassword){
+        const { newPassword,confirmPassword,authToken} = req.body
+        if(!newPassword || !confirmPassword || !authToken){
             return res.render('resetpassword',{
                 error:"Password not entired"
             })
@@ -129,14 +139,21 @@ exports.handleResetPassword = async (req, res) => {
                 error:"password and confirm password not same"
             })
         }
+        let decodeToken;
+        try {
+            decodeToken = jwt.verify(authToken,process.env.JWT_SECRET)
+        } catch (error) {
+            return res.render('restpassword',{
+                error:"invalid or expired token"
+            })
+        }
         const salt = bcrypt.genSaltSync(10);
         const password = bcrypt.hashSync(newPassword, salt);
 
-        const email = store.email
-        await User.findOneAndUpdate({ email },{password:password})
+        await User.findOneAndUpdate({ _id:decodeToken.id },{password:password})
 
         return res.render('login',{
-            message:"password updated successfully"
+            message:"Password updated successfully"
         })
     } catch (error) {
         console.log(error)

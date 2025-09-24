@@ -11,8 +11,9 @@
     </style>
 </head>
 <body>
-    <h1>verify otp</h1>
+    <h1>OTP has been sent to <%= email %> please check your inbox</h1>
     <form action="/user/verifyotp" method="POST" >
+        <input type="hidden" name="email" value="<%= email %>">
         <div>
             <label for="otp">Enter OTP</label>
             <input type="text" name="otp" placeholder="otp">
