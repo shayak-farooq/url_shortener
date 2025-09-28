@@ -33,3 +33,9 @@ git clone https://github.com/shayak-farooq/url_shortener.git
 cd url_shortener
 npm install
 npm start
+
+## Prerequisite: Running Redis Server
+
+Before starting the application, ensure that Redis is up and running on your machine.
+```bash
+server redis-server start
