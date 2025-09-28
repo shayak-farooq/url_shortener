@@ -16,6 +16,7 @@ const express = require('express');
 router = express.Router()
 
 router.post('/',upload.single('profile'),userController.signUp)
+router.post('/verifySignupOtp',userController.verifySignupOtp)
 router.post('/login',userController.handleUserLogin)
 router.post('/forgetpassword',userController.handleforgetpassword)
 router.post('/verifyotp',userController.handleVerifyotp)

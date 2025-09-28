@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>login</title>
+    <style>
+        div{
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>OTP has been sent to <%= email %> please check your inbox</h1>
+    <form action="/user/verifySignupOtp" method="POST" >
+        <input type="hidden" name="email" value="<%= email %>">
+        <div>
+            <label for="otp">Enter OTP</label>
+            <input type="text" name="userOtp" placeholder="otp" required>
+        </div>
+        <div>            
+            <button type="submit">Enter otp</button>
+        </div>
+    </form>
+    <% if (locals.error) { %>
+     <p><%= locals.error %></p>
+    <% } %>
+    
+</body>
+</html>

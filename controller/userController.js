@@ -4,13 +4,12 @@ const bcrypt = require('bcryptjs')
 const nodemailer = require("nodemailer");
 const dotenv = require('dotenv').config();
 const jwt = require('jsonwebtoken')
+const Redis = require('ioredis');
+const redis = new Redis();
 
-let store = {
-    OTP :null,
-    email:null
-}
-function generateOTP(){
-    return Math.floor(1000 + Math.random()* 900000).toString()
+
+function generateOTP() {
+    return Math.floor(1000 + Math.random() * 900000).toString()
 }
 
 exports.signUp = async (req, res) => {
@@ -25,8 +24,36 @@ exports.signUp = async (req, res) => {
             return res.status(400).json({ error: 'All fields are required' })
         }
 
-        await User.create({ name, email, userName, password, profile })
-        res.redirect('/')
+        // await User.create({ name, email, userName, password, profile })
+        let OTP = generateOTP();
+        console.log(OTP)
+        const transporter = nodemailer.createTransport({
+            host: "smtp.gmail.com",
+            port: 465,
+            secure: true, // true for 465, false for other ports
+            auth: {
+                user: process.env.EMAIL_USER,
+                pass: process.env.EMAIL_PASS,
+            },
+        });
+        (async () => {
+            const info = await transporter.sendMail({
+                from: process.env.EMAIL_USER,
+                to: email,
+                subject: "OTP for Signup",
+                text: `your OTP is ${OTP}.\nplease Do not share it with anyone`, // plain‑text body
+            });
+
+            console.log("Message sent:", info.messageId);
+        })();
+        await redis.set(`otp:${email}`, OTP, 'EX', 600);
+        await redis.set(`password:${email}`, password, 'EX', 600);
+        await redis.set(`profile:${email}`, profile, 'EX', 600);
+        await redis.set(`userName:${email}`, userName, 'EX', 600);
+        await redis.set(`name:${email}`, name, 'EX', 600);
+
+        // res.redirect('/')
+        res.render('VerifySignupOtp', { email: email })
     }
     catch (err) {
 
@@ -34,6 +61,27 @@ exports.signUp = async (req, res) => {
     }
 }
 
+exports.verifySignupOtp = async (req, res) => {
+    try {
+        const { email, userOtp } = req.body
+        const storedOtp = await redis.get(`otp:${email}`);
+        if (!userOtp) {
+            return res.render('VerifySignupOtp', { error: "Otp required",email:email })
+        }
+        if (userOtp !== storedOtp) {
+            return res.render('VerifySignupOtp', { error: "Invalid otp",email:email })
+        }
+        const password = await redis.get(`password:${email}`);
+        const profile = await redis.get(`profile:${email}`);
+        const userName = await redis.get(`userName:${email}`);
+        const name = await redis.get(`name:${email}`);
+        await User.create({ name, email, userName, password, profile })
+
+        res.redirect('/')
+    } catch (error) {
+
+    }
+}
 exports.handleUserLogin = async (req, res) => {
     try {
 
@@ -67,7 +115,7 @@ exports.handleforgetpassword = async (req, res) => {
         if (!user) {
             return res.render('forgetpassword', { error: " Invalid Email" })
         }
-        let OTP= generateOTP();
+        let OTP = generateOTP();
         console.log(OTP)
         let expire = Date.now() + 10 * 60 * 1000
         user.passwordResetToken = OTP
@@ -82,7 +130,7 @@ exports.handleforgetpassword = async (req, res) => {
                 pass: process.env.EMAIL_PASS,
             },
         });
-  
+
         (async () => {
             const info = await transporter.sendMail({
                 from: process.env.EMAIL_USER,
@@ -94,7 +142,7 @@ exports.handleforgetpassword = async (req, res) => {
             console.log("Message sent:", info.messageId);
         })();
         // return res.render('forgetpassword',{otpsent:true})
-        return res.render('verifyotp',{email:user.email})  
+        return res.render('verifyotp', { email: user.email })
     }
     catch (error) {
         console.log("error login", error)
@@ -104,56 +152,56 @@ exports.handleforgetpassword = async (req, res) => {
 
 exports.handleVerifyotp = async (req, res) => {
     try {
-        const {otp,email} = req.body
-        if(!otp || !email){
-            return res.render('verifyotp',{
-                error:"OTP required"
+        const { otp, email } = req.body
+        if (!otp || !email) {
+            return res.render('verifyotp', {
+                error: "OTP required"
             })
         }
-        const user = await User.findOne({email,passwordResetToken:otp,passwordResetExpires:{$gt:Date.now()}})
-        if(!user){
-            return res.render('verifyotp',{
-                error:"Invalid OTP or OTP Expired"
+        const user = await User.findOne({ email, passwordResetToken: otp, passwordResetExpires: { $gt: Date.now() } })
+        if (!user) {
+            return res.render('verifyotp', {
+                error: "Invalid OTP or OTP Expired"
             })
         }
         const authToken = jwt.sign(
-            {id : user._id},
+            { id: user._id },
             process.env.JWT_SECRET,
-            { expiresIn: '10m'}
+            { expiresIn: '10m' }
         )
-        return res.render('resetpassword',{authToken:authToken})
+        return res.render('resetpassword', { authToken: authToken })
     } catch (error) {
         console.log(error)
     }
 }
 exports.handleResetPassword = async (req, res) => {
     try {
-        const { newPassword,confirmPassword,authToken} = req.body
-        if(!newPassword || !confirmPassword || !authToken){
-            return res.render('resetpassword',{
-                error:"Password not entired"
+        const { newPassword, confirmPassword, authToken } = req.body
+        if (!newPassword || !confirmPassword || !authToken) {
+            return res.render('resetpassword', {
+                error: "Password not entired"
             })
         }
-        if(newPassword !== confirmPassword){
-            return res.render('restpassword',{
-                error:"password and confirm password not same"
+        if (newPassword !== confirmPassword) {
+            return res.render('restpassword', {
+                error: "password and confirm password not same"
             })
         }
         let decodeToken;
         try {
-            decodeToken = jwt.verify(authToken,process.env.JWT_SECRET)
+            decodeToken = jwt.verify(authToken, process.env.JWT_SECRET)
         } catch (error) {
-            return res.render('restpassword',{
-                error:"invalid or expired token"
+            return res.render('restpassword', {
+                error: "invalid or expired token"
             })
         }
         const salt = bcrypt.genSaltSync(10);
         const password = bcrypt.hashSync(newPassword, salt);
 
-        await User.findOneAndUpdate({ _id:decodeToken.id },{password:password})
+        await User.findOneAndUpdate({ _id: decodeToken.id }, { password: password })
 
-        return res.render('login',{
-            message:"Password updated successfully"
+        return res.render('login', {
+            message: "Password updated successfully"
         })
     } catch (error) {
         console.log(error)
