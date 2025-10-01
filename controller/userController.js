@@ -6,7 +6,7 @@ const dotenv = require('dotenv').config();
 const jwt = require('jsonwebtoken')
 const Redis = require('ioredis');
 const redis = new Redis();
-
+const logger =require('../service/winstonLogger')
 
 function generateOTP() {
     return Math.floor(1000 + Math.random() * 900000).toString()
@@ -56,7 +56,7 @@ exports.signUp = async (req, res) => {
         res.render('VerifySignupOtp', { email: email })
     }
     catch (err) {
-
+        logger.error('error during signup'+err)
         console.error('Error creating user', err)
     }
 }
@@ -79,7 +79,8 @@ exports.verifySignupOtp = async (req, res) => {
 
         res.redirect('/')
     } catch (error) {
-
+        logger.error('error during signup otp validation'+ error)
+        // console.log(error)
     }
 }
 exports.handleUserLogin = async (req, res) => {

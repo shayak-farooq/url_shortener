@@ -38,4 +38,4 @@ npm start
 
 Before starting the application, ensure that Redis is up and running on your machine.
 ```bash
-server redis-server start
+service redis-server start
