@@ -4,9 +4,10 @@ const bcrypt = require('bcryptjs')
 const nodemailer = require("nodemailer");
 const dotenv = require('dotenv').config();
 const jwt = require('jsonwebtoken')
-const Redis = require('ioredis');
-const redis = new Redis();
-const logger =require('../service/winstonLogger')
+// const Redis = require('ioredis');
+// const redis = new Redis();
+const logger = require('../service/winstonLogger');
+const { error } = require('winston');
 
 function generateOTP() {
     return Math.floor(1000 + Math.random() * 900000).toString()
@@ -19,6 +20,10 @@ exports.signUp = async (req, res) => {
         const password = bcrypt.hashSync(req.body.password, salt);
         // console.log(salt,password)
         const { name, email, userName } = req.body
+        const existingUser = await User.find({ $or: [{ email }, { userName }] })
+        if (existingUser) {
+            res.render('signup', { error: "Email or username already exists" })
+        }
         const profile = req.file.filename
         if (!userName || !password || !email) {
             return res.status(400).json({ error: 'All fields are required' })
@@ -46,40 +51,76 @@ exports.signUp = async (req, res) => {
 
             console.log("Message sent:", info.messageId);
         })();
-        await redis.set(`otp:${email}`, OTP, 'EX', 600);
-        await redis.set(`password:${email}`, password, 'EX', 600);
-        await redis.set(`profile:${email}`, profile, 'EX', 600);
-        await redis.set(`userName:${email}`, userName, 'EX', 600);
-        await redis.set(`name:${email}`, name, 'EX', 600);
+
+        let hashedOTP = bcrypt.hashSync(OTP, 10);
+        let authToken = jwt.verify({
+            hashedOTP,
+            email,
+            password,
+            profile,
+            userName,
+            name
+        }, process.env.JWT_SECRET,
+            { expiresIn: "10m" })
+        // await redis.set(`otp:${email}`, OTP, 'EX', 600);
+        // await redis.set(`password:${email}`, password, 'EX', 600);
+        // await redis.set(`profile:${email}`, profile, 'EX', 600);
+        // await redis.set(`userName:${email}`, userName, 'EX', 600);
+        // await redis.set(`name:${email}`, name, 'EX', 600);
 
         // res.redirect('/')
-        res.render('VerifySignupOtp', { email: email })
+        res.render('VerifySignupOtp', { authToken })
     }
     catch (err) {
-        logger.error('error during signup'+err)
+        logger.error('error during signup' + err)
         console.error('Error creating user', err)
+        return res.status(500).json({
+            error: "Internal server error. Please try again later"
+        })
     }
 }
 
 exports.verifySignupOtp = async (req, res) => {
     try {
-        const { email, userOtp } = req.body
-        const storedOtp = await redis.get(`otp:${email}`);
-        if (!userOtp) {
-            return res.render('VerifySignupOtp', { error: "Otp required",email:email })
+        const { authToken, userOtp } = req.body
+        // const storedOtp = await redis.get(`otp:${email}`);
+        if (!userOtp || !authToken) {
+            return res.render('VerifySignupOtp', { error: "Otp required", authToken: authToken })
         }
-        if (userOtp !== storedOtp) {
-            return res.render('VerifySignupOtp', { error: "Invalid otp",email:email })
+
+        let decodeToken;
+        try {
+            decodeToken = jwt.verify(authToken, process.env.JWT_SECRET);
+        } catch (err) {
+            return res.render("VerifySignupOtp", {
+                authToken: authToken,
+                error: "Invalid or expired token"
+            })
         }
-        const password = await redis.get(`password:${email}`);
-        const profile = await redis.get(`profile:${email}`);
-        const userName = await redis.get(`userName:${email}`);
-        const name = await redis.get(`name:${email}`);
-        await User.create({ name, email, userName, password, profile })
+        const isOtpValid = bcrypt.compareSync(userOtp, decodeToken.hashedOtp);
+
+        if (!isOtpValid) {
+            return res.render("VerifySignupOtp", {
+                authToken: authToken,
+                error: "Invalid OTP"
+            });
+        }
+        // const password = await redis.get(`password:${email}`);
+        // const profile = await redis.get(`profile:${email}`);
+        // const userName = await redis.get(`userName:${email}`);
+        // const name = await redis.get(`name:${email}`);
+
+        await User.create({ 
+            name: decodeToken.name,
+            email:decodeToken.email,
+            userName:decodeToken.userName,
+            password:decodeToken.password,
+            profile:decodeToken.password
+         })
 
         res.redirect('/')
     } catch (error) {
-        logger.error('error during signup otp validation'+ error)
+        logger.error('error during signup otp validation' + error)
         // console.log(error)
     }
 }

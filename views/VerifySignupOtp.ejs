@@ -13,7 +13,7 @@
 <body>
     <h1>OTP has been sent to <%= email %> please check your inbox</h1>
     <form action="/user/verifySignupOtp" method="POST" >
-        <input type="hidden" name="email" value="<%= email %>">
+        <input type="hidden" name="authToken" value="<%= authToken %>">
         <div>
             <label for="otp">Enter OTP</label>
             <input type="text" name="userOtp" placeholder="otp" required>

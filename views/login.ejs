@@ -5,8 +5,98 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>login</title>
     <style>
-        div{
-            margin: 10px 0;
+       * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f7f7f7;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+        
+        h1 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+        
+        /* Style the form */
+        form {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 300px;
+            text-align: center;
+        }
+
+        div {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 14px;
+            color: #333;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        button[type="button"] {
+            background-color: #28a745;
+            margin-top: 5px;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        button[type="button"]:hover {
+            background-color: #218838;
+        }
+
+        /* Error message styles */
+        .error {
+            color: red;
+            margin-top: 10px;
+        }
+
+        /* Styling for the links */
+        a {
+            display: block;
+            margin-top: 10px;
+            font-size: 14px;
+            color: #007bff;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
         }
     </style>
 </head>
@@ -14,11 +104,11 @@
     <h1>login</h1>
     <form action="/user/login" method="POST" >
         <div>
-            <label for="name">User Name :</label>
-            <input type="text" name="userName" placeholder="user Name">
+            <!-- <label for="name">User Name :</label> -->
+            <input type="text" name="userName" placeholder="User Name">
         </div>
         <div>
-            <label for="name">Password :</label>
+            <!-- <label for="name">Password :</label> -->
             <input type="text" name="password" placeholder="Password">
         </div>
         <a href="/forgetpassword">Forget Password</a>

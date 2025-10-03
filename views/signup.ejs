@@ -36,6 +36,12 @@
         <div>
             <button type="submit">Signup</button>
         </div>
+        <a href="/login">Login</a>
     </form>
+    <% if (locals.error) { %>
+        <div class="error">
+            <%= error %> <!-- Display the error message -->
+        </div>
+    <% } %>
 </body>
 </html>
