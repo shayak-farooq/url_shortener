@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="google-adsense-account" content="ca-pub-5250427837991313">
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5250427837991313"
-     crossorigin="anonymous"></script>
+        crossorigin="anonymous"></script>
 
     <title>Home Page</title>
     <style>
@@ -163,48 +163,55 @@
 
 <body>
     <h1>URL Shortener</h1>
+    <!-- URL Form -->
+    <div>
+        <form method="POST" action="/url">
+            <label for="url">Enter Your Original URL</label><br />
+            <input type="text" name="url" placeholder="https://example.com" id="url" required />
+            <button type="submit">Generate</button>
+        </form>
+    </div>
 
-            <!-- URL Form -->
-            <div>
-                <form method="POST" action="/url">
-                    <label for="url">Enter Your Original URL</label><br />
-                    <input type="text" name="url" placeholder="https://example.com" id="url" required />
-                    <button type="submit">Generate</button>
-                </form>
-            </div>
+    <!-- Show all URLs -->
+    <% if (url && url.length> 0) { %>
+        <h2>All Shortened URLs</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Original URL</th>
+                    <th>Shortened URL</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% url.forEach(u=> { %>
+                    <tr>
+                        <td>
+                            <a href="<%= u.originalUrl %>" target="_blank">
+                                <%= u.originalUrl %>
+                            </a>
+                        </td>
+                        <td>
+                            <a href="http://url-shortener-0k2p.onrender.com/url/<%= u.shortId %>" target="_blank">
+                                http://url-shortener-0k2p.onrender.com/url/<%= u.shortId %>
+                            </a>
+                        </td>
+                    </tr>
+                    <% }) %>
+            </tbody>
 
-            <!-- Show all URLs -->
-            <% if (url && url.length> 0) { %>
-                <h2>All Shortened URLs</h2>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Original URL</th>
-                            <th>Shortened URL</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <% url.forEach(u=> { %>
-                            <tr>
-                                <td>
-                                    <a href="<%= u.originalUrl %>" target="_blank">
-                                        <%= u.originalUrl %>
-                                    </a>
-                                </td>
-                                <td>
-                                    <a href="http://url-shortener-0k2p.onrender.com/url/<%= u.shortId %>"
-                                        target="_blank">
-                                        http://url-shortener-0k2p.onrender.com/url/<%= u.shortId %>
-                                    </a>
-                                </td>
-                            </tr>
-                            <% }) %>
-                    </tbody>
-
-                </table>
-                <% } else { %>
-                    <p>No URLs found yet.</p>
-                    <% } %>
-
+        </table>
+        <% } else { %>
+            <p>No URLs found yet.</p>
+            <% } %>
+                <script async
+                    src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5250427837991313"
+                    crossorigin="anonymous"></script>
+                <!-- second-slot -->
+                <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-5250427837991313"
+                    data-ad-slot="6973993762" data-ad-format="auto" data-full-width-responsive="true"></ins>
+                <script>
+                    (adsbygoogle = window.adsbygoogle || []).push({});
+                </script>
 </body>
+
 </html>
