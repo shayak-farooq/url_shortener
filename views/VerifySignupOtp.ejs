@@ -1,29 +1,128 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>login</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5250427837991313"
+        crossorigin="anonymous"></script>
+    <title>Verify OTP</title>
     <style>
-        div{
-            margin: 10px 0;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .card {
+            background: #fff;
+            padding: 30px 25px;
+            border-radius: 12px;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
+            width: 350px;
+            text-align: center;
+            animation: fadeIn 0.5s ease;
+        }
+
+        h2 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 6px;
+            text-align: left;
+            font-weight: 600;
+            color: #444;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 12px 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 15px;
+            outline: none;
+            transition: 0.3s ease;
+        }
+
+        input[type="text"]:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 6px rgba(102, 126, 234, 0.4);
+        }
+
+        button {
+            margin-top: 20px;
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            color: #fff;
+            transition: all 0.3s ease;
+        }
+
+        button:hover {
+            background: linear-gradient(90deg, #764ba2, #667eea);
+            transform: scale(1.03);
+        }
+
+        .error {
+            margin-top: 15px;
+            color: #e74c3c;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
     </style>
 </head>
+
 <body>
-    <form action="/user/verifySignupOtp" method="POST" >
-        <input type="hidden" name="authToken" value="<%= authToken %>">
-        <div>
-            <label for="otp">Enter OTP</label>
-            <input type="text" name="userOtp" placeholder="otp" required>
-        </div>
-        <div>            
-            <button type="submit">Enter otp</button>
-        </div>
-    </form>
-    <% if (locals.error) { %>
-     <p><%= locals.error %></p>
-    <% } %>
-    
+    <div class="card">
+        <h2>Verify Your OTP</h2>
+        <form action="/user/verifySignupOtp" method="POST">
+            <input type="hidden" name="authToken" value="<%= authToken %>">
+
+            <div>
+                <label for="otp">Enter OTP</label>
+                <input type="text" name="userOtp" placeholder="Enter your OTP" required>
+            </div>
+
+            <div>
+                <button type="submit">Submit OTP</button>
+            </div>
+        </form>
+
+        <% if (locals.error) { %>
+            <p class="error">
+                <%= locals.error %>
+            </p>
+            <% } %>
+    </div>
 </body>
+
 </html>

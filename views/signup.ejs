@@ -1,15 +1,140 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5250427837991313"
+     crossorigin="anonymous"></script>
     <title>Signup</title>
     <style>
-        div{
-            margin: 10px 0;
+        /* Reset + Fonts */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        /* Background */
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            color: #333;
+        }
+
+        /* Heading */
+        h1 {
+            margin-bottom: 20px;
+            font-size: 32px;
+            font-weight: bold;
+            color: #fff;
+            text-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Form container */
+        form {
+            background: #fff;
+            padding: 30px 25px;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+            width: 380px;
+            transition: transform 0.3s ease;
+        }
+
+        form:hover {
+            transform: translateY(-5px);
+        }
+
+        /* Labels */
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #444;
+        }
+
+        /* Input fields */
+        input[type="text"],
+        input[type="file"] {
+            width: 100%;
+            padding: 12px 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 15px;
+            outline: none;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+        }
+
+        input[type="text"]:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 6px rgba(102, 126, 234, 0.4);
+        }
+
+        /* File input styling */
+        input[type="file"] {
+            padding: 6px;
+            border: 1px dashed #aaa;
+            background: #fafafa;
+            cursor: pointer;
+        }
+
+        input[type="file"]:hover {
+            border-color: #667eea;
+        }
+
+        /* Button */
+        button {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        button:hover {
+            background: linear-gradient(90deg, #764ba2, #667eea);
+            transform: scale(1.03);
+        }
+
+        /* Link */
+        a {
+            display: block;
+            margin-top: 12px;
+            text-align: center;
+            font-size: 14px;
+            color: #667eea;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        a:hover {
+            color: #764ba2;
+            text-decoration: underline;
+        }
+
+        /* Error message */
+        .error {
+            margin-top: 15px;
+            color: #e74c3c;
+            font-size: 14px;
+            font-weight: 500;
+            text-align: center;
         }
     </style>
 </head>
+
 <body>
     <h1>signup</h1>
     <form action="/user" method="post" enctype="multipart/form-data">
@@ -42,6 +167,7 @@
         <div class="error">
             <%= error %> <!-- Display the error message -->
         </div>
-    <% } %>
+        <% } %>
 </body>
+
 </html>

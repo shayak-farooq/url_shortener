@@ -5,26 +5,156 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5250427837991313"
+     crossorigin="anonymous"></script>
     <title>Home Page</title>
     <style>
+        /* Global Styles */
         body {
             font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #74ebd5 0%, #ACB6E5 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: #333;
         }
 
+        /* Heading */
+        h1 {
+            margin-top: 30px;
+            font-size: 36px;
+            font-weight: bold;
+            color: #fff;
+            text-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Subheading */
+        h2 {
+            margin-top: 30px;
+            font-size: 24px;
+            color: #444;
+        }
+
+        /* URL Generated Message */
+        p {
+            margin-top: 20px;
+            font-size: 16px;
+            background: #ffffffcc;
+            padding: 12px 18px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        p a {
+            color: #007bff;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        p a:hover {
+            text-decoration: underline;
+        }
+
+        /* Form Container */
+        div form {
+            margin-top: 25px;
+            background: #fff;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+            width: 400px;
+            text-align: center;
+        }
+
+        /* Form Elements */
+        label {
+            font-size: 14px;
+            font-weight: 600;
+            color: #444;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 12px 10px;
+            margin-top: 8px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 15px;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        input[type="text"]:focus {
+            border-color: #6a11cb;
+            box-shadow: 0 0 6px rgba(106, 17, 203, 0.3);
+        }
+
+        /* Button */
+        button {
+            margin-top: 15px;
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+            font-weight: bold;
+            background: linear-gradient(90deg, #6a11cb, #2575fc);
+            color: #fff;
+            transition: all 0.3s ease;
+        }
+
+        button:hover {
+            background: linear-gradient(90deg, #2575fc, #6a11cb);
+            transform: scale(1.03);
+        }
+
+        /* Table */
         table {
             border-collapse: collapse;
-            width: 80%;
-            margin-top: 20px;
+            width: 85%;
+            margin: 30px auto;
+            background: #fff;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
         }
 
-        th, td {
-            border: 1px solid #aaa;
-            padding: 8px 12px;
+        th,
+        td {
+            padding: 14px 18px;
             text-align: left;
+            font-size: 15px;
         }
 
         th {
-            background-color: #f4f4f4;
+            background: #6a11cb;
+            color: #fff;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 14px;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        tr:hover td {
+            background-color: #f1f1ff;
+        }
+
+        /* Table Links */
+        td a {
+            color: #2575fc;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        td a:hover {
+            text-decoration: underline;
         }
     </style>
 </head>
@@ -32,54 +162,48 @@
 <body>
     <h1>URL Shortener</h1>
 
-    <% if (locals.id) { %>
-        <p>URL Generated: 
-            <a href="http://localhost:5000/url/<%= id %>" target="_blank">
-                http://localhost:5000/url/<%= id %>
-            </a>
-        </p>
-    <% } %>
+            <!-- URL Form -->
+            <div>
+                <form method="POST" action="/url">
+                    <label for="url">Enter Your Original URL</label><br />
+                    <input type="text" name="url" placeholder="https://example.com" id="url" required />
+                    <button type="submit">Generate</button>
+                </form>
+            </div>
 
-    <!-- URL Form -->
-    <div>
-        <form method="POST" action="/url">
-            <label for="url">Enter Your Original URL</label><br />
-            <input type="text" name="url" placeholder="https://example.com" id="url" required/>
-            <button type="submit">Generate</button>
-        </form>
-    </div>
+            <!-- Show all URLs -->
+            <% if (url && url.length> 0) { %>
+                <h2>All Shortened URLs</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Original URL</th>
+                            <th>Shortened URL</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% url.forEach(u=> { %>
+                            <tr>
+                                <td>
+                                    <a href="<%= u.originalUrl %>" target="_blank">
+                                        <%= u.originalUrl %>
+                                    </a>
+                                </td>
+                                <td>
+                                    <a href="http://url-shortener-0k2p.onrender.com/url/<%= u.shortId %>"
+                                        target="_blank">
+                                        http://url-shortener-0k2p.onrender.com/url/<%= u.shortId %>
+                                    </a>
+                                </td>
+                            </tr>
+                            <% }) %>
+                    </tbody>
 
-    <!-- Show all URLs -->
-    <% if (url && url.length > 0) { %>
-        <h2>All Shortened URLs</h2>
-        <table>
-            <thead>
-                <tr>
-                    <th>Original URL</th>
-                    <th>Shortened URL</th>
-                </tr>
-            </thead>
-            <tbody>
-  <% url.forEach(u => { %>
-    <tr>
-      <td>
-        <a href="<%= u.originalUrl %>" target="_blank">
-          <%= u.originalUrl %> 
-        </a>
-      </td>
-      <td>
-        <a href="http://url-shortener-0k2p.onrender.com/url/<%= u.shortId %>" target="_blank">
-          http://url-shortener-0k2p.onrender.com/url/<%= u.shortId %>
-        </a>
-      </td>
-    </tr>
-  <% }) %>
-</tbody>
-
-        </table>
-    <% } else { %>
-        <p>No URLs found yet.</p>
-    <% } %>
+                </table>
+                <% } else { %>
+                    <p>No URLs found yet.</p>
+                    <% } %>
 
 </body>
+
 </html>
