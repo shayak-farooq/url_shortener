@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const path = require('path');
 const cookieParser = require('cookie-parser');
-
+const cors = require('cors')
 const urlRoutes = require('./routes/urlRoutes');
 const userRoutes = require('./routes/userRoute');
 const staticRoutes = require('./routes/staticRoutes');
@@ -33,11 +33,15 @@ app.use(express.json())
 app.use(express.urlencoded( {extended:true }))
 app.use(cookieParser())
 app.use(checkAuth);
-
+app.use(cors())
 
 app.use('/user',userRoutes)
 app.use('/url',restrictToLoggedUserOnly,urlRoutes)
 app.use('/',staticRoutes)
+app.use('/event',( req , res ) => {
+    console.log(req.body)
+    return res.status(200).json("Successfull")
+})
 
 
 app.listen(PORT,()=>{
